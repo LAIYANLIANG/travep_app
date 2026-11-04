@@ -1,0 +1,38 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Flutter Web (Port 53858)",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "chrome",
+      "args": [
+        "--web-port=53858",
+        "--web-hostname=localhost"
+      ]
+    },
+    {
+      "name": "Flutter Web (CanvasKit 53858)",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "chrome",
+      "args": [
+        "--web-port=53858",
+        "--web-hostname=localhost",
+        "--web-renderer=canvaskit"
+      ]
+    },
+    {
+      "name": "Flutter Web (HTML 53858)",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "chrome",
+      "args": [
+        "--web-port=53858",
+        "--web-hostname=localhost",
+        "--web-renderer=html"
+      ]
+    }
+  ]
+}
+

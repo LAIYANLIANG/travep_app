@@ -1,0 +1,135 @@
+openapi: 3.0.3
+info:
+  title: B2B Route Calculation Engine
+  description: 專為旅行應用設計的路線計算微服務，支援 B2B 多租戶與混合模式運算。
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Local Development
+  - url: https://route-engine-xyz.a.run.app
+    description: Google Cloud Run (Prod)
+
+paths:
+  /v1/routes/calculate:
+    post:
+      summary: 計算行程路線
+      description: 根據提供的景點列表與模式，計算路徑、時間與順序。
+      operationId: calculateRoute
+      parameters:
+        - in: header
+          name: X-Organization-ID
+          schema:
+            type: string
+          required: true
+          description: B2B 組織識別碼 (用於計費與權限隔離)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouteRequest'
+      responses:
+        '200':
+          description: 計算成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RouteResponse'
+        '400':
+          description: 請求格式錯誤
+        '401':
+          description: 無效的組織 ID
+
+components:
+  schemas:
+    RouteRequest:
+      type: object
+      required:
+        - waypoints
+        - mode
+      properties:
+        mode:
+          type: string
+          enum: [OPTIMIZED, MAZE]
+          description: |
+            OPTIMIZED: 系統自動跑 TSP 演算法算最佳路徑。
+            MAZE: 尊重使用者排序，僅計算點對點數據。
+        start_time:
+          type: string
+          format: date-time
+          description: 行程開始時間 (ISO 8601)
+        constraints:
+          $ref: '#/components/schemas/Constraints'
+        waypoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/Waypoint'
+            
+    Constraints:
+      type: object
+      properties:
+        transport_mode:
+          type: string
+          enum: [DRIVING, WALKING, TRANSIT]
+          default: DRIVING
+        avoid_tolls:
+          type: boolean
+          default: false
+
+    Waypoint:
+      type: object
+      required:
+        - id
+        - location
+      properties:
+        id:
+          type: string
+          description: 景點 ID (Firestore Document ID)
+        location:
+          type: object
+          properties:
+            lat: 
+              type: number
+              format: double
+            lng: 
+              type: number
+              format: double
+        duration_check:
+          type: integer
+          description: 預計停留時間 (分鐘)
+
+    RouteResponse:
+      type: object
+      properties:
+        route_id:
+          type: string
+        total_duration_seconds:
+          type: integer
+        total_distance_meters:
+          type: integer
+        segments:
+          type: array
+          items:
+            $ref: '#/components/schemas/RouteSegment'
+        warnings:
+          type: array
+          items:
+            type: string
+            description: 警示訊息 (如：抵達時店家已打烊)
+
+    RouteSegment:
+      type: object
+      properties:
+        from_id:
+          type: string
+        to_id:
+          type: string
+        duration_seconds:
+          type: integer
+        distance_meters:
+          type: integer
+        polyline:
+          type: string
+          description: Google Maps Encoded Polyline
+        transport_mode:
+          type: string

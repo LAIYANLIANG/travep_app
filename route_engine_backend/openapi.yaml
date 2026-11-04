@@ -1,0 +1,149 @@
+openapi: 3.0.3
+info:
+  title: Antigravity B2B Route Engine
+  version: 2.0.0
+  description: 支援迷宮推導、層級搜尋與 TSP 優化的核心引擎。
+
+servers:
+  - url: http://localhost:8080
+    description: Local Development
+
+paths:
+  # --- 核心路線計算 (支援終點與迷宮) ---
+  /v1/routes/calculate:
+    post:
+      summary: 計算行程與路線
+      operationId: calculateRoute
+      parameters:
+        - in: header
+          name: X-Organization-ID
+          schema: { type: string }
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouteRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RouteResponse'
+
+  # --- 層級下鑽搜尋 (東歐 -> 羅馬尼亞) ---
+  /v1/places/hierarchy:
+    get:
+      summary: 取得地理層級列表
+      parameters:
+        - name: parent_id
+          in: query
+          schema: { type: string }
+          description: 若為空則回傳各大洲/區域；若輸入 'europe' 則回傳國家。
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlaceNode'
+
+  # --- 定錨半徑搜尋 (附近 1km) ---
+  /v1/places/nearby:
+    get:
+      summary: 定錨搜尋附近地點
+      parameters:
+        - name: anchor_lat
+          in: query
+          required: true
+          schema: { type: number, format: double }
+        - name: anchor_lng
+          in: query
+          required: true
+          schema: { type: number, format: double }
+        - name: radius_meters
+          in: query
+          schema: { type: integer, default: 1000 }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlaceSummary'
+
+  # --- Gemini AI 分析 ---
+  /v1/places/analyze:
+    post:
+      summary: AI 餐廳/景點分析
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                place_id: { type: string }
+                user_intent: { type: string }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object # Gemini JSON Result
+
+components:
+  schemas:
+    RouteRequest:
+      type: object
+      required: [mode, waypoints]
+      properties:
+        mode:
+          type: string
+          enum: [MAZE, OPTIMIZED]
+        target_end_point: # 新增：終點目標
+          type: object
+          properties:
+            lat: { type: number }
+            lng: { type: number }
+        waypoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/Waypoint'
+
+    Waypoint:
+      type: object
+      properties:
+        id: { type: string }
+        location:
+          type: object
+          properties:
+            lat: { type: number }
+            lng: { type: number }
+        locked: { type: boolean, default: false }
+
+    RouteResponse:
+      type: object
+      properties:
+        route_id: { type: string }
+        total_duration: { type: integer }
+        remaining_distance_to_target: { type: integer, description: "距離終點還剩多少公尺" }
+        segments:
+          type: array
+          items: { type: object } # 簡化顯示
+
+    PlaceNode:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        type: { type: string, enum: [REGION, COUNTRY, CITY, SPOT] }
+        has_children: { type: boolean }
+
+    PlaceSummary:
+      type: object
+      properties:
+        place_id: { type: string }
+        name: { type: string }
+        location: { type: object }

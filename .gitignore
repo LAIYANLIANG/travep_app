@@ -1,0 +1,182 @@
+# ============================================================================
+# Trivep App - Strict Zero-Trust .gitignore (Open Source Ready)
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# 1. 機敏資訊、API Keys、憑證與環境變數 (Secrets, Credentials & Auth)
+# ----------------------------------------------------------------------------
+**/.env
+**/.env.*
+!**/.env.example
+
+# 私鑰、憑證、Keystore
+**/*.pem
+**/*.key
+**/*.p12
+**/*.cer
+**/*.jks
+**/*.keystore
+**/android/key.properties
+**/ios/Flutter/Debug.xcconfig
+**/ios/Flutter/Release.xcconfig
+
+# Firebase 與 Google Cloud 機敏設定檔 (含 Android / iOS / macOS / Web)
+**/google-services.json
+**/GoogleService-Info.plist
+**/firebase_options.dart
+**/service-account*.json
+**/credentials*.json
+**/client_secret*.json
+.firebase/
+**/.firebase/
+.firebaserc
+**/.firebaserc
+firebase-debug.log*
+
+# 含有 API Key 或測試憑證的本地工具腳本
+list_models.py
+models.json
+batch_translate.py
+tools/test_live_apis.py
+tools/translate-all-posts.js
+j87-astro/restore_counter.mjs
+j87-astro/restore_article_counts.mjs
+j87-astro/analyze_firestore.mjs
+
+# 含有硬編碼 Google Maps / Firebase API Key 的平台入口檔（保留於本地，不上傳 GitHub）
+web/index.html
+android/app/src/main/AndroidManifest.xml
+ios/Runner/AppDelegate.swift
+mountain_suite_monorepo/apps/mountain_hiking_app/web/index.html
+mountain_suite_monorepo/apps/mountain_hiking_app/android/app/src/main/AndroidManifest.xml
+j87-astro/src/lib/firebase.ts
+j87-astro/src/adapters/firebase-travel-bridge.ts
+j87-astro/public/shared-checklist.html
+
+# ----------------------------------------------------------------------------
+# 2. 操作記錄、每日工作日誌、內部規格與除錯輸出 (Logs, Docs & Work Records)
+# ----------------------------------------------------------------------------
+# 排除整個 docs 目錄與 spec 目錄
+/docs/
+**/docs/
+/spec/
+**/spec/
+
+# 排除根目錄與子專案的所有內部工作記錄/計畫書 (僅保留 README.md)
+/*.md
+!/README.md
+j87-astro/FIRESTORE_*.md
+j87-astro/firestore_analysis.txt
+j87-astro/temp_analysis.txt
+mountain_suite_monorepo/apps/gemini.md
+
+# 排除所有 Log、程式碼匯出與除錯 JSON
+*.log
+**/*.log
+**/*_log.txt
+codingbase.txt
+output.txt
+backend/debug_*.json
+route_engine_backend/debug_*.json
+
+# AI 代理與本地工作區紀錄
+.claude/
+**/.claude/
+**/.agent/
+migrate_working_dir/
+
+# ----------------------------------------------------------------------------
+# 3. 個人照片、部落格草稿與私人媒體資產 (Personal Photos & Blog Drafts)
+# ----------------------------------------------------------------------------
+# 排除整個部落格草稿與個人照片資料夾
+/部落格內容/
+**/部落格內容/
+
+# 排除 Astro 內的個人攝影照片與相簿資產 (保留網站圖示 icons/favicon)
+j87-astro/public/images/
+j87-astro/src/assets/images/
+j87-astro/public/assets/backup/
+
+# 若有散落的個人相機原圖或影片格式一併阻擋
+**/DJI_*.*
+**/*.HEIC
+**/*.heic
+**/*.MOV
+**/*.mov
+
+# ----------------------------------------------------------------------------
+# 4. 編譯產物、打包檔與暫存 (Build Artifacts & Bundles - 避免內嵌編譯期 Key 外洩)
+# ----------------------------------------------------------------------------
+/build/
+**/build/
+/coverage/
+dist/
+**/dist/
+.astro/
+**/.astro/
+**/*.apk
+**/*.aab
+**/*.ipa
+j87-astro/public/flutter-web/
+j87-astro/public/mountain/fullscreen/
+j87-astro/public/downloads/
+
+# ----------------------------------------------------------------------------
+# 5. 語言與框架標準忽略項目 (Flutter / Dart / Python / Node / OS / IDE)
+# ----------------------------------------------------------------------------
+# Miscellaneous & OS
+*.class
+*.pyc
+*.swp
+.DS_Store
+**/.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+
+# IntelliJ / Android Studio / VS Code
+*.iml
+*.ipr
+*.iws
+.idea/
+**/.idea/
+**/android/.gradle/
+**/android/local.properties
+
+# Flutter / Dart / Pub / CocoaPods
+**/doc/api/
+**/ios/Flutter/.last_build_id
+**/ios/Pods/
+**/macos/Pods/
+.dart_tool/
+**/.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+app.*.symbols
+app.*.map.json
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# Node.js
+node_modules/
+**/node_modules/
+
+# Python Virtual Environments & Cache
+venv/
+**/venv/
+.venv/
+**/.venv/
+env/
+ENV/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+**/.pytest_cache/
